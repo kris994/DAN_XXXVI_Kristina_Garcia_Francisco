@@ -5,15 +5,41 @@ using System.Threading;
 
 namespace DAN_XXXVI_Kristina_Garcia_Francisco
 {
+    /// <summary>
+    /// The matrix class that generates a matrix from random numbers
+    /// </summary>
     class Matrix
     {
+        #region Property
+        /// <summary>
+        /// Generated values that will be in the matrix
+        /// </summary>
         private int[] matrixValues = new int[10000];
+        /// <summary>
+        /// Two dimensional matrix
+        /// </summary>
         private int[,] matrixArray;
+        /// <summary>
+        /// The lock object
+        /// </summary>
         private readonly object lockMatrix = new object();
+        /// <summary>
+        /// Random number generator
+        /// </summary>
         private Random rng = new Random();
+        /// <summary>
+        /// File where the odd number from the matrix are saved at
+        /// </summary>
         private readonly string matrixFile = "matrix.txt";
+        /// <summary>
+        /// Checks if the file was created
+        /// </summary>
         private bool fileCreated = false;
+        #endregion
 
+        /// <summary>
+        /// Creates the matrix with the random given numbers
+        /// </summary>
         public void CreateMatrix()
         {
             lock (lockMatrix)
@@ -36,6 +62,9 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
             }     
         }
 
+        /// <summary>
+        /// Generates the values for the matrix
+        /// </summary>
         public void GenerateMatrixValues()
         {
             lock (lockMatrix)
@@ -48,16 +77,21 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
 
                 int matrixLength = matrixValues.Length;
                 int value = rng.Next(10, 100);
+
                 for (int i = 0; i < matrixLength; i++)
                 {
                     value = rng.Next(10, 100);
                     matrixValues[i] = value;
                 }
 
+                // Release the lock so the CreateMatrix method can continue
                 Monitor.Pulse(lockMatrix);
             }
         }
 
+        /// <summary>
+        /// Get all odd numbers from the matrix and save it to the file
+        /// </summary>
         public void OddNumberToFile()
         {
             lock (lockMatrix)
@@ -77,11 +111,13 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
                 int totalOddNumbers = allOddNumbers.Count;
                 int[] matrixOddValues = new int[totalOddNumbers];
 
+                // Fill up the array
                 for (int i = 0; i < totalOddNumbers; i++)
                 {
                     matrixOddValues[i] = allOddNumbers[i];
                 }
 
+                // Save the odd numbers to the file
                 using (StreamWriter streamWriter = new StreamWriter(matrixFile))
                 {
                     for (int i = 0; i < totalOddNumbers; i++)
@@ -97,6 +133,9 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
             }
         }
 
+        /// <summary>
+        /// Reads the values from the file
+        /// </summary>
         public void ReadFromFile()
         {
             lock (lockMatrix)
@@ -118,6 +157,9 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
             }
         }
 
+        /// <summary>
+        /// Creates all threads
+        /// </summary>
         public void CreateWorkers()
         {
             Thread createM = new Thread(CreateMatrix);
