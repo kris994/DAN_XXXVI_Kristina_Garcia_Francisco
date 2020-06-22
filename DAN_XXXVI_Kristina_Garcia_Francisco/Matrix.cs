@@ -10,14 +10,15 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
     class Matrix
     {
         private int[] matrixValues = new int[10000];
-        private int[,] matrixArray = new int[100, 100];
-        private object lockMatrix = new object();
+        private int[,] matrixArray;
+        private readonly object lockMatrix = new object();
         private Random rng = new Random();
 
         public void CreateMatrix()
         {
             lock (lockMatrix)
-            {              
+            {
+                matrixArray = new int[100, 100];
                 Monitor.Wait(lockMatrix);
 
                 int matrixLength = matrixValues.Length;
@@ -26,10 +27,7 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
                 {
                     for (int j = 0; j < matrixArray.GetLength(1); j++)
                     {
-                        for (int k = 0; k < matrixLength; k++)
-                        {
-                            matrixArray[i, j] = matrixValues[k];
-                        }                        
+                        matrixArray[i, j] = matrixValues[(i+1)*j];
                     }
                 }
             }     
@@ -39,8 +37,7 @@ namespace DAN_XXXVI_Kristina_Garcia_Francisco
         {
             // Making sure the getValues thread only starts after the 
             // first part of createM thread is done
-            Thread.Sleep(0);
-
+            Thread.Sleep(10);
             lock (lockMatrix)
             {
                 int matrixLength = matrixValues.Length;
